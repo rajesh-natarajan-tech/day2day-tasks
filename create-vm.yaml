@@ -1,0 +1,39 @@
+---
+- name: Create Oracle VirtualBox VM on Windows Workstation
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  vars:
+    vm_name: "ansible-vm"
+    vm_memory: 2048
+    vm_vram: 16
+    vm_cpus: 2
+    vm_disk: "C:/VirtualBox VMs/ansible-vm/ansible-vm.vdi"
+    vm_disk_size: 20000 # in MB
+    vm_iso: "C:/iso/OracleLinux-R9-U6-x86_64-boot.iso"
+    vm_os_type: "Linux"
+
+  tasks:
+    - name: Create VM
+      community.general.virtualbox_vm:
+        name: "{{ vm_name }}"
+        state: powered_off
+        os_type: "{{ vm_os_type }}"
+        cpus: "{{ vm_cpus }}"
+        memory: "{{ vm_memory }}"
+        vram: "{{ vm_vram }}"
+        disks:
+          - name: "{{ vm_disk }}"
+            size: "{{ vm_disk_size }}"
+            controller: SATA
+        dvd:
+          - "{{ vm_iso }}"
+        boot_order:
+          - dvd
+          - disk
+        force: yes
+
+    - name: Start VM
+      community.general.virtualbox_vm:
+        name: "{{ vm_name }}"
+        state: running
