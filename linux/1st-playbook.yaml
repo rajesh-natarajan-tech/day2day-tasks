@@ -1,0 +1,44 @@
+---
+- name: Set hostname for Linux machines
+  hosts: all
+  become: true
+  tasks:
+    - name: Set hostname
+      tags: 
+        - set_hostname
+      hostname:
+        name: "{{ server_name }}"
+    - name: Disable DNS management by NetworkManager
+      tags: 
+        - set_resolv
+      ansible.builtin.ini_file:
+        path: /etc/NetworkManager/NetworkManager.conf
+        section: main
+        option: dns
+        value: none
+        backup: yes
+    - name: Deploy custom resolv.conf
+      tags: 
+        - set_resolv
+      ansible.builtin.template:
+        src: resolv.conf.j2
+        dest: /etc/resolv.conf
+        owner: root
+        group: root
+        mode: '0644'
+        backup: yes
+    - name: install bind
+      tags: 
+        - install_bind
+      yum: 
+        name: 
+          - bind
+          - bind-chroot
+        state: present
+    - name: start bind
+      tags: 
+        - start_bind
+      service: 
+        name: named
+        state: restarted
+

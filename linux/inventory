@@ -1,0 +1,12 @@
+[linux]
+master server_name=master.homelab.local ipaddr=192.168.1.158 netmask=255.255.255.0 
+
+
+[linux:vars]
+ansible_user=root
+
+
+[kubernetes]
+vm1 server_name=vm1.homelab.local ipaddr=198.168.1.101 netmask=255.255.255.0
+vm2 server_name=vm2.homelab.local ipaddr=198.168.1.102 netmask=255.255.255.0
+vm3 server_name=vm3.homelab.local ipaddr=198.168.1.103 netmask=255.255.255.0
