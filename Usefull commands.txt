@@ -1,0 +1,20 @@
+Usefull commands 
+
+ansible-inventory -i inventory.ini --list
+
+
+
+# Create a WinRM listener for HTTPS
+winrm create winrm/config/Client/Auth/Basic=true
+
+
+
+Get-ChildItem -Path Cert:\LocalMachine\My
+
+
+
+# Allow inbound traffic on port 5986
+Enable-NetFirewallRule -Name WINRM-HTTP-In-TCP-PUBLIC
+New-NetFirewallRule -Name "WinRM-HTTPS" -DisplayName "WinRM over HTTPS" -Enabled True -Direction Inbound -Protocol TCP -LocalPort 5986 -Action Allow
+
+
