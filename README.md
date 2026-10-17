@@ -1,37 +1,40 @@
-# Day2Day Tasks: Home Lab Setup for Linux, Kubernetes, and DevOps Beginners
+# home.lab.com DNS server
 
-Welcome to the **day2day-tasks** repository! This project is designed to help beginners set up a home lab environment focused on Linux, Kubernetes, and essential DevOps tools.
+BIND9 on Alpine, serving the `home.lab.com` zone and reverse zone for `192.168.56.0/24`.
+Other names are forwarded to 1.1.1.1 / 8.8.8.8.
 
-## What You'll Find Here
+## Files
 
-- Step-by-step guides for installing and configuring Linux distributions.
-- Instructions for setting up Kubernetes clusters at home.
-- Tutorials on basic DevOps tools and workflows.
-- Practical tasks and exercises to build hands-on experience.
+| File | Purpose |
+|------|---------|
+| `Dockerfile` | Builds the image and validates config/zones at build time |
+| `config/named.conf` | BIND options, ACLs, forwarders, zone definitions |
+| `config/db.home.lab.com` | Forward zone (A / CNAME records) |
+| `config/db.192.168.56` | Reverse zone (PTR records) |
+| `docker-compose.yml` | Runs the container on port 53 |
 
-## Who Is This For?
+## Run
 
-- Beginners interested in Linux system administration.
-- Aspiring DevOps engineers looking to practice in a home lab.
-- Anyone wanting to learn Kubernetes from scratch.
+```bash
+docker compose up -d --build
+# or
+docker build -t home-lab-dns .
+docker run -d --name home-lab-dns -p 53:53/udp -p 53:53/tcp --restart unless-stopped home-lab-dns
+```
 
-## Getting Started
+## Test
 
-1. Clone this repository.
-2. Follow the setup guides in the documentation.
-3. Complete the hands-on tasks and track your progress.
+```bash
+dig @192.168.56.10 master.home.lab.com +short
+dig @192.168.56.10 -x 192.168.56.101 +short
+dig @192.168.56.10 google.com +short
+```
 
-Happy learning and experimenting!
+## Adding a host
 
+1. Add an `A` record to `config/db.home.lab.com` and a `PTR` record to `config/db.192.168.56`.
+2. Bump the `serial` in both SOA records.
+3. Rebuild: `docker compose up -d --build`.
 
-
-## Tools Used
-
-This project leverages the following tools to build your home lab environment:
-
-- **Oracle VirtualBox**: For creating and managing virtual machines.
-- **Windows Subsystem for Linux (WSL)**: To provide a Linux environment on Windows.
-- **Vagrant**: For automating VM provisioning and configuration.
-- **Ansible**: For automating software installation and environment setup.
-
-These tools together make it easy to set up, configure, and manage your home lab efficiently.
+> On hosts running `systemd-resolved`, port 53 may already be in use. Disable its stub
+> listener (`DNSStubListener=no` in `/etc/systemd/resolved.conf`) before starting the container.
