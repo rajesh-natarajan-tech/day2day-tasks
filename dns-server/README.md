@@ -11,7 +11,7 @@ Other names are forwarded to 1.1.1.1 / 8.8.8.8.
 | `config/named.conf` | BIND options, ACLs, forwarders, zone definitions |
 | `config/db.home.lab.com` | Forward zone (A / CNAME records) |
 | `config/db.192.168.56` | Reverse zone (PTR records) |
-| `docker-compose.yml` | Runs the container on port 53 |
+| `docker-compose.yaml` | Runs the container on port 53 with `config/` mounted read-only |
 
 ## Run
 
@@ -34,7 +34,12 @@ dig @192.168.56.10 google.com +short
 
 1. Add an `A` record to `config/db.home.lab.com` and a `PTR` record to `config/db.192.168.56`.
 2. Bump the `serial` in both SOA records.
-3. Rebuild: `docker compose up -d --build`.
+3. Check the config, then restart (config is mounted, no rebuild needed):
+
+```bash
+docker compose exec dns named-checkzone home.lab.com /etc/bind/zones/db.home.lab.com
+docker compose restart
+```
 
 > On hosts running `systemd-resolved`, port 53 may already be in use. Disable its stub
 > listener (`DNSStubListener=no` in `/etc/systemd/resolved.conf`) before starting the container.

@@ -1,9 +1,0 @@
-services:
-  dns:
-    build: .
-    image: home-lab-dns:latest
-    container_name: home-lab-dns
-    restart: unless-stopped
-    ports:
-      - "53:53/udp"
-      - "53:53/tcp"
