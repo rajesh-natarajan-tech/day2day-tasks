@@ -1,0 +1,14 @@
+services:
+  dns:
+    build: .
+    image: homelab-dns:latest
+    container_name: homelab-dns
+    restart: unless-stopped
+    ports:
+      - "53:53/udp"
+      - "53:53/tcp"
+    volumes:
+      # Edit zone files on the host, then run: docker compose restart dns
+      - ./config/named.conf:/etc/bind/named.conf:ro
+      - ./config/db.home.lab.com:/etc/bind/zones/db.home.lab.com:ro
+      - ./config/db.192.168.56:/etc/bind/zones/db.192.168.56:ro
