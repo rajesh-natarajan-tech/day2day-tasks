@@ -1,0 +1,21 @@
+- name: Update DNS record using nsupdate
+  hosts: master
+  gather_facts: no
+  tasks:
+    - name: Install dnspython
+      ansible.builtin.pip:
+        name: dnspython
+        executable: /usr/bin/pip3.9
+
+    - name: Add or update A record
+      community.general.nsupdate:
+        key_name: "rndckey"
+        key_secret: "AUX13OMGKduSk1LMVXsoVL8CCTnaSI3hcedQ3uF7szg="
+        key_algorithm: "hmac-sha256"
+        server: "192.168.56.10"
+        zone: "homelab.local"
+        record: "host1"
+        value: "192.168.56.100"
+        type: "A"
+        ttl: 3600
+        state: present

@@ -1,0 +1,6 @@
+[linux]
+192.168.1.158 server_name=master.homelab.com ipaddr=192.168.1.158 netmask=255.255.255.0 gateway=192.168.1.1
+
+
+[linux:vars]
+ansible_user=root
